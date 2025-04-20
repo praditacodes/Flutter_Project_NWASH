@@ -45,16 +45,17 @@ class AudioRecorderService extends ChangeNotifier {
       'audio_${DateTime.now().millisecondsSinceEpoch}.aac',
     );
 
-    await _audioRecorder!.startRecorder(
-      toFile: filePath,
-      codec: Codec.aacADTS,
-    );
+//! This is was causing the issue as recorder and speech-to-text both were trying to use the microphone at the same time.
+    // await _audioRecorder!.startRecorder(
+    //   toFile: filePath,
+    //   codec: Codec.aacADTS,
+    // );
 
     _audioPath = filePath;
     _isRecording = true;
     notifyListeners();
 
-    print("🎙️ Started recording: $_audioPath");
+    // print("🎙️ Started recording: $_audioPath");
     await _startListening();
   }
 
@@ -73,19 +74,19 @@ class AudioRecorderService extends ChangeNotifier {
 
   Future<void> _startListening() async {
     bool available = await _speechToText.initialize(
-      onStatus: (status) => print('🔄 Speech status: \$status'),
-      onError: (error) => print('⚠️ Speech error: \$error'),
+      onStatus: (status) => print('🔄 Speech status: $status'),
+      onError: (error) => print('⚠️ Speech error: $error'),
     );
 
     if (available) {
       _isListening = true;
       notifyListeners();
 
-      _speechToText.listen(
+      await _speechToText.listen(
         localeId: 'ne-NP', // Nepali
         onResult: (result) {
           _recognizedText = result.recognizedWords;
-          print('🗣️ Recognized Text (Nepali): \$_recognizedText');
+          print('🗣️ Recognized Text (Nepali): $_recognizedText');
           notifyListeners(); // ✅ UI will now be updated
         },
       );

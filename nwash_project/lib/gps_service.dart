@@ -25,7 +25,10 @@ class GPSService {
 
       // Step 3: Get current location
       Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
+        locationSettings: LocationSettings(
+          accuracy: LocationAccuracy.best,
+        ),
+        // desiredAccuracy: LocationAccuracy.high, //!This property is deprecated. so, it's preferred to use the latest property through locaiton settings.
       );
       print("✅ Current Location: ${position.latitude}, ${position.longitude}");
       return position;
